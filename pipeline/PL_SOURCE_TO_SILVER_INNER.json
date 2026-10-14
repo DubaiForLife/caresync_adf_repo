@@ -88,7 +88,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "LS_AzureDatabricks_Compute",
+					"referenceName": "LS_AzureDatabricks",
 					"type": "LinkedServiceReference"
 				}
 			},
@@ -133,7 +133,7 @@
 					}
 				},
 				"linkedServiceName": {
-					"referenceName": "LS_AzureDatabricks_Compute",
+					"referenceName": "LS_AzureDatabricks",
 					"type": "LinkedServiceReference"
 				}
 			},
