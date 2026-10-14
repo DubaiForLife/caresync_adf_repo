@@ -1,0 +1,15 @@
+{
+	"name": "mano-adf-outlook",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "478bef1f-6696-49a8-94ef-007537a7ecfd",
+		"tenantId": "e410980a-195d-4542-9c30-2bc498002c20"
+	}
+}
