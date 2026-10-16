@@ -177,6 +177,7 @@
 			},
 			{
 				"name": "Check load type",
+				"description": "Check load type - if not FULL - lookup watermark field and value",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -201,6 +202,7 @@
 					"ifTrueActivities": [
 						{
 							"name": "Lookup Watermark value",
+							"description": "Lookup Watermark value from ctrl.watermark",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
