@@ -4,7 +4,7 @@
 		"activities": [
 			{
 				"name": "Read Source Table List",
-				"description": "",
+				"description": "Read table list from ctrl.table_config",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -34,6 +34,7 @@
 			},
 			{
 				"name": "Ingest All Tables",
+				"description": "Main ForEach",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -53,6 +54,7 @@
 					"activities": [
 						{
 							"name": "Injest From Source To Silver",
+							"description": "Invoking Inner pipeline",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
@@ -86,6 +88,7 @@
 						},
 						{
 							"name": "Insert IN PROGRESS Status",
+							"description": "Inserting in progress status in ctrl.audit_log",
 							"type": "Script",
 							"dependsOn": [],
 							"policy": {
@@ -115,6 +118,7 @@
 						},
 						{
 							"name": "Update FAILED Status",
+							"description": "Updated status failed in ctrl.audit_log",
 							"type": "Script",
 							"dependsOn": [
 								{
