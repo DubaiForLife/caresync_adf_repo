@@ -4,6 +4,7 @@
 		"activities": [
 			{
 				"name": "Read Table Details",
+				"description": "Read table details for a given table_id",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -32,6 +33,7 @@
 			},
 			{
 				"name": "Set Start Time",
+				"description": "UTC Start time of the load",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"policy": {
@@ -175,6 +177,7 @@
 			},
 			{
 				"name": "Check load type",
+				"description": "Check load type - if not FULL - lookup watermark field and value",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -199,6 +202,7 @@
 					"ifTrueActivities": [
 						{
 							"name": "Lookup Watermark value",
+							"description": "Lookup Watermark value from ctrl.watermark",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
