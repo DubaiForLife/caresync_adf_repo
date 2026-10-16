@@ -4,6 +4,7 @@
 		"activities": [
 			{
 				"name": "Read Table Details",
+				"description": "Read table details for a given table_id",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -32,6 +33,7 @@
 			},
 			{
 				"name": "Set Start Time",
+				"description": "UTC Start time of the load",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"policy": {
