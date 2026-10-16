@@ -67,7 +67,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/caresync/caresync_adb_repo/NB_Landing To Bronze",
+					"notebookPath": "/Users/manoravi04.official@outlook.com/caresync_adb_repo/NB_Landing To Bronze",
 					"baseParameters": {
 						"landing_timestamp": {
 							"value": "@variables('Start Time')",
@@ -112,7 +112,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/caresync/caresync_adb_repo/NB_Bronze To Silver",
+					"notebookPath": "/Users/manoravi04.official@outlook.com/caresync_adb_repo/NB_Bronze To Silver",
 					"baseParameters": {
 						"landing_timestamp": {
 							"value": "@variables('Start Time')",
