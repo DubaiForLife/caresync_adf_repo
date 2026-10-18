@@ -47,11 +47,11 @@
 			"type": "string",
 			"defaultValue": "neondb_owner"
 		},
-		"Tumble_file_simple_properties_Test_Tumble_parameters_startTime": {
+		"Tumble_Simple_file_properties_pipeline_parameters_startTime": {
 			"type": "string",
 			"defaultValue": "@trigger().outputs.windowStartTime"
 		},
-		"Tumble_file_simple_properties_Test_Tumble_parameters_endTime": {
+		"Tumble_Simple_file_properties_pipeline_parameters_endTime": {
 			"type": "string",
 			"defaultValue": "@trigger().outputs.windowEndTime"
 		}
@@ -1402,32 +1402,33 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Tumble_file_simple')]",
+			"name": "[concat(parameters('factoryName'), '/Tumble_Simple_file')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "Test_Tumble",
-							"type": "PipelineReference"
-						},
-						"parameters": {
-							"startTime": "[parameters('Tumble_file_simple_properties_Test_Tumble_parameters_startTime')]",
-							"endTime": "[parameters('Tumble_file_simple_properties_Test_Tumble_parameters_endTime')]"
-						}
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "Test_Tumble",
+						"type": "PipelineReference"
+					},
+					"parameters": {
+						"startTime": "[parameters('Tumble_Simple_file_properties_pipeline_parameters_startTime')]",
+						"endTime": "[parameters('Tumble_Simple_file_properties_pipeline_parameters_endTime')]"
 					}
-				],
-				"type": "ScheduleTrigger",
+				},
+				"type": "TumblingWindowTrigger",
 				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 2,
-						"startTime": "2026-10-18T15:24:00",
-						"timeZone": "India Standard Time"
-					}
+					"frequency": "Minute",
+					"interval": 5,
+					"startTime": "2026-10-18T15:24:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
 				}
 			},
 			"dependsOn": [
