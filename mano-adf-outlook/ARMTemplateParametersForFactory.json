@@ -34,6 +34,12 @@
 		},
 		"LS_PostgreSql_properties_typeProperties_username": {
 			"value": "neondb_owner"
+		},
+		"Tumble_file_simple_properties_Test_Tumble_parameters_startTime": {
+			"value": "@trigger().outputs.windowStartTime"
+		},
+		"Tumble_file_simple_properties_Test_Tumble_parameters_endTime": {
+			"value": "@trigger().outputs.windowEndTime"
 		}
 	}
 }
