@@ -1,0 +1,209 @@
+{
+	"name": "PL_SILVER_TO_GOLD",
+	"properties": {
+		"activities": [
+			{
+				"name": "Read Gold Table List",
+				"description": "Read Gold table list from ctrl.table_config",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select table_id,gold_table_name from ctrl.table_config\nwhere stage='SILVER_TO_GOLD'\nand Is_active='True'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Ingest All Gold Tables",
+				"description": "Main ForEach",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Read Gold Table List",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Read Gold Table List').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "Insert IN PROGRESS Status",
+							"description": "Inserting in progress status in ctrl.audit_log",
+							"type": "Script",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "LS_AzureSqlDatabase",
+								"type": "LinkedServiceReference"
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "Query",
+										"text": {
+											"value": "INSERT INTO ctrl.audit_log (adf_run_id,table_id,stage,status,start_time)\nVALUES ('@{pipeline().parameters.adf_run_id}',@{item().table_id},'SILVER_TO_GOLD','IN_PROGRESS',SYSUTCDATETIME())",
+											"type": "Expression"
+										}
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						},
+						{
+							"name": "Update Gold FAILED Status",
+							"description": "Updated status failed in ctrl.audit_log",
+							"type": "Script",
+							"dependsOn": [
+								{
+									"activity": "Gold Notebooks",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "LS_AzureSqlDatabase",
+								"type": "LinkedServiceReference"
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "Query",
+										"text": {
+											"value": "UPDATE ctrl.audit_log \nset status='FAILED',\nend_time = SYSUTCDATETIME()\nWHERE table_id=@{item().table_id}\nand adf_run_id='@{pipeline().parameters.adf_run_id}'",
+											"type": "Expression"
+										}
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						},
+						{
+							"name": "Gold Notebooks",
+							"description": "Calling Gold Notebooks",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Insert IN PROGRESS Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": {
+									"value": "/Users/manoravi04.official@outlook.com/caresync_adb_repo/Gold/NB_@{item().gold_table_name}",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_AzureDatabricks",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Update Gold SUCCESS Status",
+							"description": "Updated status success in ctrl.audit_log",
+							"type": "Script",
+							"dependsOn": [
+								{
+									"activity": "Gold Notebooks",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "LS_AzureSqlDatabase",
+								"type": "LinkedServiceReference"
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "Query",
+										"text": {
+											"value": "UPDATE ctrl.audit_log \nset status = 'SUCCESS',\nend_time = SYSUTCDATETIME(),\nrecords_written = @{activity('Gold Notebooks').output.runOutput}\nWHERE table_id = @{item().table_id}\nand adf_run_id = '@{pipeline().parameters.adf_run_id}'",
+											"type": "Expression"
+										}
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"source_system": {
+				"type": "string"
+			},
+			"adf_run_id": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"test_variable": {
+				"type": "Integer"
+			}
+		},
+		"annotations": []
+	}
+}
