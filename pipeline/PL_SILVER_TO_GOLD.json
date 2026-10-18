@@ -1,5 +1,5 @@
 {
-	"name": "PL_SILVER_TO_GOLD_MAIN",
+	"name": "PL_SILVER_TO_GOLD",
 	"properties": {
 		"activities": [
 			{
@@ -193,8 +193,7 @@
 		],
 		"parameters": {
 			"source_system": {
-				"type": "string",
-				"defaultValue": "neon_postgres"
+				"type": "string"
 			},
 			"adf_run_id": {
 				"type": "string"
